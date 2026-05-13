@@ -1,4 +1,4 @@
-unit AgendaDEXT.API.Startup;
+﻿unit AgendaDEXT.API.Startup;
 
 interface
 
@@ -44,11 +44,8 @@ begin
     .AddScoped<ITarefaService, TTarefaService>;
 
   // Registra o Middleware customizado de validação de API Key
-  Services.AddSingleton<IMiddleware>(
-    function(Provider: IServiceProvider): TObject
-    begin
-      Result := TApiKeyMiddleware.Create(Configuration);
-    end);
+  var ApiKeyMid := TApiKeyMiddleware.Create(FConfig);
+  Services.AddSingleton<IMiddleware>(ApiKeyMid);
 
   // Habilita a varredura e injeção para todos os controladores da aplicação
   Services.AddControllers;
@@ -56,14 +53,18 @@ end;
 
 procedure TStartup.Configure(const App: IWebApplication);
 begin
+  // api key
+  FConfig.Item['Security:ApiKey'] := 'agenda-BDMG-dev-key-2026';
+
   // Configura a padronização global de serialização JSON de produção
   JsonDefaultSettings(JsonSettings.CamelCase.CaseInsensitive.ISODateFormat);
 
-  App.Builder
-    .UseExceptionHandler // 1. Global exception interceptor (sempre primeiro)
-    .UseMiddleware<IMiddleware> // 2. Autenticação por API Key
-    .MapControllers // 3. Mapeamento de rotas dos controladores REST
-    .UseSwagger(SwaggerOptions.Title('AgendaDEXT API').Version('v1')); // 4. Documentação interativa (sempre por último)
+  App
+    .MapControllers
+    .UseMiddleware(TApiKeyMiddleware)
+    .Builder
+    .UseExceptionHandler
+    .UseSwagger(SwaggerOptions.Title('AgendaDEXT API').Version('v1'));
 end;
 
 procedure TStartup.ConfigureDatabase(Options: TDbContextOptions);

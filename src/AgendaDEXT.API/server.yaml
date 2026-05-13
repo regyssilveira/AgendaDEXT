@@ -1,0 +1,13 @@
+database:
+  server: localhost
+  port: 1433
+  database: AgendaBDMG
+  username: sa
+  password: "SuaSenha@123"
+  driver: MSSQL
+
+server:
+  port: 9005
+
+security:
+  api_key: "agenda-BDMG-dev-key-2026"

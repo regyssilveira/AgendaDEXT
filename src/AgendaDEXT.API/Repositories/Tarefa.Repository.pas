@@ -119,7 +119,7 @@ begin
     Result.MediaPrioridadePendentes := 0;
 
   // 3. Tarefas concluídas nos últimos 7 dias
-  var DataLimite := Now - 7;
+  var DataLimite: TDateTime := Now - 7;
   Result.TarefasConcluidasUltimos7Dias := FDb.Tarefas
     .Where(t.Status = 'CONCLUIDA')
     .Where(t.DataExclusao.IsNull)

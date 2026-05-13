@@ -1,0 +1,7 @@
+server:
+  host: localhost
+  port: 9005
+  protocol: http
+
+security:
+  api_key: "agenda-dev-key-2026"

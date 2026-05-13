@@ -1,4 +1,4 @@
-unit ApiKeyMiddleware;
+﻿unit ApiKeyMiddleware;
 
 interface
 
@@ -35,10 +35,8 @@ begin
     Exit;
   end;
 
-  var ChaveEsperada := FConfig.GetValue('Security:ApiKey', 'agenda-BDMG-dev-key-2026');
-  var ChaveRecebida := Ctx.Request.Header('X-API-KEY');
-  if Trim(ChaveRecebida) = '' then
-    ChaveRecebida := Ctx.Request.Header('X-API-Key');
+  var ChaveEsperada := FConfig['Security:ApiKey'];
+  var ChaveRecebida := Ctx.Request.GetHeader('X-API-KEY');
 
   if Trim(ChaveRecebida) <> Trim(ChaveEsperada) then
   begin

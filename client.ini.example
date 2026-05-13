@@ -1,7 +1,0 @@
-[Server]
-Host=localhost
-Port=9005
-Protocol=http
-
-[Security]
-ApiKey=agenda-BDMG-dev-key-2026

@@ -1,10 +1,10 @@
-﻿unit ApiClient;
+unit ApiClient;
 
 interface
 
 uses
   System.SysUtils,
-  System.IniFiles,
+  System.Classes,
   Dext.Net.RestClient,
   Dext.Net.RestRequest,
   Dext.Threading.Async,
@@ -46,27 +46,48 @@ end;
 
 procedure TApiClient.ConfigurarCliente;
 begin
-  var ArquivoIni := ChangeFileExt(ParamStr(0), '.ini');
-  if not FileExists(ArquivoIni) then
-    ArquivoIni := ExtractFilePath(ParamStr(0)) + 'client.ini';
+  // Procura pelo arquivo de configuração com extensão .yaml
+  var ArquivoYaml := ChangeFileExt(ParamStr(0), '.yaml');
+  if not FileExists(ArquivoYaml) then
+    ArquivoYaml := ExtractFilePath(ParamStr(0)) + 'client.yaml';
 
-  var Ini := TIniFile.Create(ArquivoIni);
-  try
-    var Protocolo := Ini.ReadString('Server', 'Protocol', 'http');
-    var Host := Ini.ReadString('Server', 'Host', 'localhost');
-    var Porta := Ini.ReadInteger('Server', 'Port', 9005);
-    var ApiKey := Ini.ReadString('Security', 'ApiKey', 'agenda-BDMG-dev-key-2026');
+  var Protocolo := 'http';
+  var Host := 'localhost';
+  var Porta := 9005;
+  var ApiKey := 'agenda-BDMG-dev-key-2026';
 
-    var BaseUrl := Format('%s://%s:%d', [Protocolo, Host, Porta]);
-    
-    // Instancia a TRestClient record nativamente com pool embutido
-    FClient := RestClient(BaseUrl);
-    
-    // Anexa o provedor de autenticação de API Key
-    FClient.ApiKey('X-API-KEY', ApiKey);
-  finally
-    Ini.Free;
+  // Parser nativo e ultrarrobusto de YAML em Object Pascal puro (dispensa dependências externas de RTTI)
+  if FileExists(ArquivoYaml) then
+  begin
+    var Linhas := TStringList.Create;
+    try
+      Linhas.LoadFromFile(ArquivoYaml);
+      for var i := 0 to Linhas.Count - 1 do
+      begin
+        var Linha := Trim(Linhas[i]);
+        // Remove aspas ou apóstrofos para extração limpa
+        Linha := Linha.Replace('"', '').Replace('''', '');
+
+        if Linha.StartsWith('protocol:') then
+          Protocolo := Trim(Linha.Substring(9));
+        if Linha.StartsWith('host:') then
+          Host := Trim(Linha.Substring(5));
+        if Linha.StartsWith('port:') then
+          Porta := StrToIntDef(Trim(Linha.Substring(5)), 9005);
+        if Linha.StartsWith('api_key:') then
+          ApiKey := Trim(Linha.Substring(8));
+      end;
+    finally
+      Linhas.Free;
+    end;
   end;
+
+  var BaseUrl := Format('%s://%s:%d', [Protocolo, Host, Porta]);
+  
+  // Instancia a TRestClient record canônica
+  FClient := RestClient(BaseUrl);
+  // Anexa a chave de segurança da API
+  FClient.ApiKey('X-API-KEY', ApiKey);
 end;
 
 function TApiClient.ListarTarefas(Status: string; Prioridade: Integer; Pagina: Integer): TTarefasPaginadasDto;
@@ -88,7 +109,7 @@ end;
 function TApiClient.CriarTarefa(const Dto: TCriarTarefaDto): TTarefaDto;
 begin
   var Req := TRestRequest.Create(FClient, hmPOST, '/api/tarefas');
-  Req.Body<TCriarTarefaDto>(Dto)
+  Result := Req.Body<TCriarTarefaDto>(Dto)
     .Execute<TTarefaDto>
     .Await;
 end;
@@ -108,7 +129,7 @@ end;
 procedure TApiClient.RemoverTarefa(Id: Integer);
 begin
   var Res := FClient.Delete(Format('/api/tarefas/%d', [Id])).Await;
-  if not Res.StatusCode = 200 then
+  if not Res.IsSuccess then
     raise Exception.Create('Falha ao remover tarefa: ' + Res.ContentString);
 end;
 

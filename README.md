@@ -37,7 +37,7 @@ A API REST foi estruturada adotando o padrão semântico mestre do Dext:
 O Client Desktop atua puramente como consumidor dos serviços distribuídos, preservando a mais estrita fidelidade visual e estrutural através dos seus formulários nativos (`TfrmPrincipal`, `TfrmTarefa`, `TfrmStatus`):
 - **Magic Binding Declarativo**: Sincronização automatizada da interface visual (Grids, caixas de texto e botões) com as ViewModels por meio de marcações RTTI (`[BindEdit]`, `[OnClickMsg]`).
 - **Navegação de Alta Performance**: Orquestrada por instâncias desacopladas do **Dext Navigator** (`Navigator.Push`), injetando *frames* visuais limpas com injeção tipada de estado sem causar congelamentos de thread.
-- **Parametrização de Rede**: O cliente `TRestClient` inicializa dinamicamente consumindo as chaves e o BaseURL do `client.ini` na porta unificada **9005**.
+- **Parametrização de Rede**: O cliente `TRestClient` inicializa dinamicamente consumindo as chaves e o BaseURL de seus arquivos locais de configuração na porta unificada **9005**.
 
 ---
 
@@ -46,8 +46,8 @@ O Client Desktop atua puramente como consumidor dos serviços distribuídos, pre
 ```text
 /
 ├── docker-compose.yml             # Orquestração do SQL Server 2022 local
-├── server.ini.example             # Template de configuração do Backend
-├── client.ini.example             # Template de configuração do Cliente VCL
+├── server.yaml.example            # Template de configuração do Backend (YAML)
+├── client.yaml.example            # Template de configuração do Cliente VCL (YAML)
 ├── README.md                      # Documentação central do projeto
 └── /src
     ├── /AgendaDEXT.API            # Projeto Backend (API RESTful em Dext Puro)
@@ -93,8 +93,8 @@ docker-compose up -d
 O banco atenderá na porta padronizada `1433` com a senha de SA `SuaSenha@123`. Os scripts de criação física (DDL) e os quatro índices filtrados de alta performance estão estruturados em:
 `src/AgendaDEXT.API/Database/schema.sql`
 
-### Etapa 2: Configurando as Chaves e INIs
-As aplicações buscam os arquivos de configuração locais no mesmo diretório de seus executáveis. Caso inexistentes, o sistema gera os binários consumindo os seguintes valores-padrão alinhados com a raiz:
+### Etapa 2: Configurando as Chaves e Arquivos YAML
+As aplicações buscam os arquivos de configuração locais no mesmo diretório de seus executáveis. Para total flexibilidade e modernização, os templates base fornecidos na raiz seguem o padrão hierárquico **YAML** (`server.yaml.example` e `client.yaml.example`). Caso inexistentes na inicialização, o sistema gera os binários consumindo os seguintes valores-padrão alinhados com a raiz:
 - **Porta Unificada**: `9005`
 - **Senha do Banco**: `SuaSenha@123`
 - **API Key Padrão de Desenvolvimento**: `agenda-BDMG-dev-key-2026`
