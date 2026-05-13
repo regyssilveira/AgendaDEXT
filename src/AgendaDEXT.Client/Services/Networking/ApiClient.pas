@@ -116,14 +116,19 @@ end;
 
 function TApiClient.AtualizarStatus(Id: Integer; const NovoStatus: string): TTarefaDto;
 begin
-  var Payload: TAtualizarStatusDto;
-  Payload.Status := NovoStatus;
+  var Payload: TAtualizarStatusDto.Create;
+  try
+    Payload.Status := NovoStatus;
 
-  var Req := TRestRequest.Create(FClient, hmPUT, Format('/api/tarefas/%d/status', [Id]));
-  Result := Req
-    .Body(Payload)
-    .Execute<TTarefaDto>
-    .Await;
+    var Req := TRestRequest.Create(FClient, hmPUT, Format('/api/tarefas/%d/status', [Id]));
+    Result := Req
+      .Body(Payload)
+      .Execute<TTarefaDto>
+      .Await;
+
+  finally
+    Payload.Free;
+  end;
 end;
 
 procedure TApiClient.RemoverTarefa(Id: Integer);
