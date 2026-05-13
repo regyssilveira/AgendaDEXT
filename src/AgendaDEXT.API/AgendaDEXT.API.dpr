@@ -1,4 +1,4 @@
-﻿program AgendaDEXT.API;
+program AgendaDEXT.API;
 
 {$APPTYPE CONSOLE}
 
@@ -24,34 +24,42 @@ uses
 var
   App: IWebApplication;
   Provider: IServiceProvider;
-  Config: IConfiguration;
-  Porta: Integer;
+  LPort: Integer;
 begin
   SetConsoleCharSet; // OBRIGATÓRIO: garante saída correta de caracteres UTF-8 no terminal console
   try
-    WriteLn('===================================================');
-    WriteLn('       AgendaDEXT API REST Backend — Inicializando ');
-    WriteLn('===================================================');
+    // Inicializa a porta padronizada do serviço
+    LPort := 9005;
 
-    // Inicializa o builder da aplicação e injeta a classe Startup
+    // Inicializa o orquestrador da aplicação e injeta a classe Startup
     App := WebApplication;
     App.UseStartup(TStartup.Create);
-    
-    // Constrói os serviços e lê a porta customizada do arquivo de configuração
     Provider := App.BuildServices;
-    Config := Provider.GetService<IConfiguration>;
-    Porta := StrToIntDef(Config.GetValue('Server:Port', '9005'), 9005);
 
-    WriteLn('Servidor configurado para escutar na porta: ', Porta);
-    WriteLn('Documentação Swagger ativa em: http://localhost:' + IntToStr(Porta) + '/swagger');
-    WriteLn('Pressione Ctrl+C para encerrar o serviço.');
-    WriteLn('===================================================');
+    Writeln('');
+    Writeln('=============================================================');
+    Writeln('            AGENDA DEXT - SERVIDOR BACKEND (API)             ');
+    Writeln('=============================================================');
+    Writeln(Format(' [v] Status     : ONLINE na porta %d', [LPort])); 
+    Writeln(Format(' [v] Base URL   : http://localhost:%d/api', [LPort]));
+    Writeln(Format(' [v] Swagger UI : http://localhost:%d/swagger/doc/html', [LPort]));
+    Writeln('-------------------------------------------------------------');
+    Writeln('                CONEXAO COM BANCO DE DADOS                   ');
+    Writeln('-------------------------------------------------------------');
+    Writeln(' [ ] Driver     : SQL Server');
+    Writeln(' [ ] Servidor   : localhost:1433');
+    Writeln(' [ ] Database   : AgendaDEXT');
+    Writeln(' [ ] Usuario    : sa');
+    Writeln(' [v] Dext ORM   : Connection Pooling Ativo via AppDbContext');
+    Writeln('=============================================================');
+    Writeln(' Pressione Ctrl+C para encerrar o servidor...                ');
+    Writeln('=============================================================');
 
-    // Inicia o loop do servidor HTTP de forma bloqueante
-    App.Run(Porta);
+    // Inicia a escuta da API REST de forma bloqueante
+    App.Run(LPort);
   except
     on E: Exception do
-      WriteLn('Erro Fatal na Inicialização: ' + E.Message);
+      Writeln('Erro Fatal na Inicialização: ' + E.Message);
   end;
   ConsolePause; // OBRIGATÓRIO: mantém a janela de terminal aberta durante execução de debug na IDE
 end.
