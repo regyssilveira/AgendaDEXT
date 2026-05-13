@@ -69,18 +69,27 @@ end;
 
 procedure TStartup.ConfigureDatabase(Options: TDbContextOptions);
 begin
-  var Servidor := FConfig.GetValue('Database:Server', 'localhost');
-  var BaseDados := FConfig.GetValue('Database:Database', 'AgendaBDMG');
-  var Usuario := FConfig.GetValue('Database:Username', 'sa');
-  var Senha := FConfig.GetValue('Database:Password', 'SuaSenha@123');
-  var Porta := FConfig.GetValue('Database:Port', '1433');
+  // Acesso direto canônico via indexador nativo de chaves (sintaxe oficial para strings)
+  var Servidor := FConfig['Database:Server'];
+  if Trim(Servidor) = '' then Servidor := 'localhost';
+
+  var BaseDados := FConfig['Database:Database'];
+  if Trim(BaseDados) = '' then BaseDados := 'AgendaDEXT';
+
+  var Usuario := FConfig['Database:Username'];
+  if Trim(Usuario) = '' then Usuario := 'sa';
+
+  var Senha := FConfig['Database:Password'];
+  if Trim(Senha) = '' then Senha := 'SuaSenha@123';
+
+  var Porta := FConfig['Database:Port'];
+  if Trim(Porta) = '' then Porta := '1433';
 
   var StringConexao := Format('Server=%s,%s;Database=%s;User Id=%s;Password=%s;', 
     [Servidor, Porta, BaseDados, Usuario, Senha]);
 
-  Options
-    .UseSQLServer(StringConexao)
-    .WithPooling(True); // Pooling nativo ativado (obrigatório em APIs Web de produção)
+  Options.UseDriver('MSSQL').ConnectionString := StringConexao;
+  Options.WithPooling(True); // Pooling nativo ativado (obrigatório em APIs Web de produção)
 end;
 
 end.

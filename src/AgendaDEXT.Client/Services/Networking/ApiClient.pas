@@ -1,4 +1,4 @@
-unit ApiClient;
+﻿unit ApiClient;
 
 interface
 
@@ -129,7 +129,7 @@ end;
 procedure TApiClient.RemoverTarefa(Id: Integer);
 begin
   var Res := FClient.Delete(Format('/api/tarefas/%d', [Id])).Await;
-  if not Res.IsSuccess then
+  if not Res.StatusCode = 200 then
     raise Exception.Create('Falha ao remover tarefa: ' + Res.ContentString);
 end;
 
