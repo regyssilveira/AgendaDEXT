@@ -4,6 +4,7 @@ interface
 
 uses
   System.SysUtils,
+  System.Rtti,
   Dext.UI,
   Tarefa.List,
   Tarefa.Edit,
@@ -12,9 +13,9 @@ uses
 type
   TTarefaOrquestradorController = class
   private
-    FNavigator: ISimpleNavigator;
+    FNavigator: INavigator;
   public
-    constructor Create(Navigator: ISimpleNavigator);
+    constructor Create(Navigator: INavigator);
     procedure IniciarFluxo;
     procedure AbrirCriacao;
     procedure AbrirStatus(Id: Integer; const Titulo, StatusAtual: string);
@@ -23,7 +24,7 @@ type
 
 implementation
 
-constructor TTarefaOrquestradorController.Create(Navigator: ISimpleNavigator);
+constructor TTarefaOrquestradorController.Create(Navigator: INavigator);
 begin
   inherited Create;
   FNavigator := Navigator;
@@ -43,9 +44,8 @@ end;
 
 procedure TTarefaOrquestradorController.AbrirStatus(Id: Integer; const Titulo, StatusAtual: string);
 begin
-  // Empurra a tela de alteração de status com dados parametrizados
-  var Dados := Format('%d|%s|%s', [Id, Titulo, StatusAtual]);
-  FNavigator.Push(TTarefaStatusFrame, TValue.From<string>(Dados));
+  // Empurra a tela de alteração de status
+  FNavigator.Push(TTarefaStatusFrame);
 end;
 
 procedure TTarefaOrquestradorController.Voltar;

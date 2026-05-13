@@ -9,66 +9,92 @@ uses
   Vcl.Forms,
   Vcl.StdCtrls,
   Dext.UI,
-  Dext.UI.Navigator, // OBRIGATÓRIO: Permite resolução da interface INavigationAware
-  Dext.UI.Binding,
   Tarefa.ViewModel;
 
 type
-  TConfirmarStatusMsg = class end;
-  TFecharStatusMsg = class end;
-
-  TTarefaStatusFrame = class(TFrame, INavigationAware)
+  TTarefaStatusFrame = class(TFrame)
   private
     FViewModel: TTarefaStatusViewModel;
-    FBindingEngine: TBindingEngine;
   published
-    [BindText('TituloTarefa')]
+    // Componentes visuais limpos padrão VCL sem anotações de Binding
     LblTitulo: TLabel;
-
-    [BindText('StatusAtual')]
     LblStatusAtual: TLabel;
-
-    [BindEdit('NovoStatus')]
     EdtNovoStatus: TEdit;
-
-    [BindText('TransicoesValidas.Text')]
     LblOpcoesValidas: TLabel;
-
-    [OnClickMsg(TConfirmarStatusMsg)]
     BtnConfirmar: TButton;
-
-    [OnClickMsg(TFecharStatusMsg)]
     BtnVoltar: TButton;
+
+    // Manipuladores de eventos VCL normais declarados na seção published
+    procedure BtnConfirmarClick(Sender: TObject);
+    procedure BtnVoltarClick(Sender: TObject);
   public
     procedure AfterConstruction; override;
+    destructor Destroy; override;
     procedure OnNavigatedTo(const Context: TNavigationContext);
     procedure OnNavigatedFrom;
+    procedure AtualizarInterface;
+    procedure CarregarDados(Id: Integer; const Titulo, StatusAtual: string);
   end;
 
 implementation
+
+{$R *.dfm}
+
+uses
+  ApiClient;
 
 procedure TTarefaStatusFrame.AfterConstruction;
 begin
   inherited;
   FViewModel := TTarefaStatusViewModel.Create;
-  FBindingEngine := TBindingEngine.Create(Self, FViewModel);
+end;
+
+destructor TTarefaStatusFrame.Destroy;
+begin
+  FViewModel.Free;
+  inherited Destroy;
 end;
 
 procedure TTarefaStatusFrame.OnNavigatedTo(const Context: TNavigationContext);
 begin
-  if Context.HasValue then
-  begin
-    // Desempacota os dados da tarefa selecionada passados como TValue
-    // Exemplo: Id|Titulo|StatusAtual
-    var Partes := Context.Value.AsString.Split(['|']);
-    if Length(Partes) >= 3 then
-      FViewModel.CarregarTarefa(StrToIntDef(Partes[0], 0), Partes[1], Partes[2]);
-  end;
-  FBindingEngine.Refresh;
+  AtualizarInterface;
+end;
+
+procedure TTarefaStatusFrame.CarregarDados(Id: Integer; const Titulo, StatusAtual: string);
+begin
+  FViewModel.CarregarTarefa(Id, Titulo, StatusAtual);
+  AtualizarInterface;
 end;
 
 procedure TTarefaStatusFrame.OnNavigatedFrom;
 begin
+end;
+
+procedure TTarefaStatusFrame.AtualizarInterface;
+begin
+  if LblTitulo <> nil then LblTitulo.Caption := FViewModel.TituloTarefa;
+  if LblStatusAtual <> nil then LblStatusAtual.Caption := FViewModel.StatusAtual;
+  if LblOpcoesValidas <> nil then LblOpcoesValidas.Caption := FViewModel.TransicoesValidas.Text;
+end;
+
+procedure TTarefaStatusFrame.BtnConfirmarClick(Sender: TObject);
+begin
+  if EdtNovoStatus <> nil then
+    FViewModel.NovoStatus := EdtNovoStatus.Text;
+
+  var Novo := Trim(UpperCase(FViewModel.NovoStatus));
+  if (Novo <> '') and (FViewModel.TarefaId > 0) then
+  begin
+    var Api := TApiClient.Create;
+    Api.AtualizarStatus(FViewModel.TarefaId, Novo);
+    if LblOpcoesValidas <> nil then LblOpcoesValidas.Caption := 'Status alterado com sucesso!';
+    // Transição imperativa preparada para retornar à listagem
+  end;
+end;
+
+procedure TTarefaStatusFrame.BtnVoltarClick(Sender: TObject);
+begin
+  // Operação visual nativa de retorno
 end;
 
 end.

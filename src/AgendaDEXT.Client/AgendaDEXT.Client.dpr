@@ -4,6 +4,7 @@ uses
   Vcl.Forms,
   System.SysUtils,
   Dext.UI,
+  Dext.UI.Navigator,
   Tarefa.Controller in 'Features\Tarefas\Tarefa.Controller.pas',
   Tarefa.List in 'Features\Tarefas\Tarefa.List.pas',
   Tarefa.Edit in 'Features\Tarefas\Tarefa.Edit.pas',
@@ -15,22 +16,23 @@ uses
 {$R *.res}
 
 var
-  Navigator: ISimpleNavigator;
+  MainForm: TForm;
+  Navigator: INavigator;
   Controller: TTarefaOrquestradorController;
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   
-  // Cria o formulário base da aplicação de forma implícita ou explícita
-  Application.CreateForm(TForm, Application.MainForm);
-  Application.MainForm.Caption := 'AgendaDEXT Cliente VCL — Painel de Controle';
-  Application.MainForm.Width := 1024;
-  Application.MainForm.Height := 768;
-  Application.MainForm.Position := poScreenCenter;
+  // Cria o formulário base da aplicação com passagem estritamente por ponteiro mutável
+  Application.CreateForm(TForm, MainForm);
+  MainForm.Caption := 'AgendaDEXT Cliente VCL — Painel de Controle';
+  MainForm.Width := 1024;
+  MainForm.Height := 768;
+  MainForm.Position := poScreenCenter;
 
-  // Instancia e configura o Dext Navigator apontando para o formulário principal
-  Navigator := TSimpleNavigator.Create;
-  Navigator.UseAdapter(TCustomContainerAdapter.Create(Application.MainForm));
+  // Instancia e configura o Dext Navigator apontando para a variável de escopo nativa
+  Navigator := TNavigator.Create;
+  Navigator.UseAdapter(TCustomContainerAdapter.Create(MainForm));
 
   // Instancia o orquestrador e inicia o fluxo de UI empurrando a tela principal
   Controller := TTarefaOrquestradorController.Create(Navigator);

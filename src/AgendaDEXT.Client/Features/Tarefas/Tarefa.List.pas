@@ -11,100 +11,96 @@ uses
   Vcl.Grids,
   Vcl.ExtCtrls,
   Dext.UI,
-  Dext.UI.Navigator,
   Tarefa.ViewModel;
 
 type
-  // Declaração completa de mensagens para o Magic Binding (evita erros de forward declaration no Delphi)
-  TCarregarMsg = class end;
-  TProximaPaginaMsg = class end;
-  TPaginaAnteriorMsg = class end;
-  TLimparFiltrosMsg = class end;
-  TAdicionarTarefaMsg = class end;
-  TModificarStatusMsg = class end;
-  TRemoverTarefaMsg = class end;
-
-  TTarefaListFrame = class(TFrame, INavigationAware)
+  TTarefaListFrame = class(TFrame)
   private
     FViewModel: TTarefasDashboardViewModel;
-    FBindingEngine: TBindingEngine;
   published
-    // Componentes Visuais decorados com Magic Binding
-    [BindText('TotalTarefas')]
+    // Componentes Visuais padrão VCL sem atributos de Binding
     LblTotalTarefas: TLabel;
-
-    [BindText('MediaPrioridade')]
     LblMediaPrioridade: TLabel;
-
-    [BindText('ConcluidasUltimos7Dias')]
     LblConcluidas7Dias: TLabel;
-
-    [BindText('StatusMensagem')]
     LblStatusRodape: TLabel;
-
-    [BindEdit('FiltroStatus')]
     EdtFiltroStatus: TEdit;
-
-    [OnClickMsg(TCarregarMsg)]
     BtnFiltrar: TButton;
-
-    [OnClickMsg(TLimparFiltrosMsg)]
     BtnLimparFiltros: TButton;
-
-    [OnClickMsg(TPaginaAnteriorMsg)]
     BtnAnterior: TButton;
-
-    [OnClickMsg(TProximaPaginaMsg)]
     BtnProxima: TButton;
-
-    [OnClickMsg(TAdicionarTarefaMsg)]
     BtnAdicionar: TButton;
-
-    [OnClickMsg(TModificarStatusMsg)]
     BtnModificarStatus: TButton;
-
-    [OnClickMsg(TRemoverTarefaMsg)]
     BtnRemover: TButton;
-
-    // A Grid VCL principal
     StringGridTarefas: TStringGrid;
+
+    // Manipuladores de eventos VCL normais declarados na seção published
+    procedure BtnFiltrarClick(Sender: TObject);
+    procedure BtnLimparFiltrosClick(Sender: TObject);
+    procedure BtnAnteriorClick(Sender: TObject);
+    procedure BtnProximaClick(Sender: TObject);
+    procedure BtnAdicionarClick(Sender: TObject);
+    procedure BtnModificarStatusClick(Sender: TObject);
+    procedure BtnRemoverClick(Sender: TObject);
   public
     procedure AfterConstruction; override;
+    destructor Destroy; override;
     procedure OnNavigatedTo(const Context: TNavigationContext);
     procedure OnNavigatedFrom;
+    procedure AtualizarInterface;
     procedure SincronizarGrid;
   end;
 
 implementation
 
+{$R *.dfm}
+
 uses
-  ApiClient;
+  ApiClient,
+  Tarefa.Controller;
 
 procedure TTarefaListFrame.AfterConstruction;
 begin
   inherited;
-  // Inicializa a engine de binding bidirecional nativa
   FViewModel := TTarefasDashboardViewModel.Create(TApiClient.Create);
-  FBindingEngine := TBindingEngine.Create(Self, FViewModel);
+end;
+
+destructor TTarefaListFrame.Destroy;
+begin
+  FViewModel.Free;
+  inherited Destroy;
 end;
 
 procedure TTarefaListFrame.OnNavigatedTo(const Context: TNavigationContext);
 begin
   FViewModel.CarregarDados;
-  SincronizarGrid;
-  FBindingEngine.Refresh;
+  AtualizarInterface;
 end;
 
 procedure TTarefaListFrame.OnNavigatedFrom;
 begin
-  // Limpeza de contexto se necessário
+end;
+
+procedure TTarefaListFrame.AtualizarInterface;
+begin
+  if LblTotalTarefas <> nil then
+    LblTotalTarefas.Caption := IntToStr(FViewModel.TotalTarefas);
+
+  if LblMediaPrioridade <> nil then
+    LblMediaPrioridade.Caption := FormatFloat('0.0', FViewModel.MediaPrioridade);
+
+  if LblConcluidas7Dias <> nil then
+    LblConcluidas7Dias.Caption := IntToStr(FViewModel.ConcluidasUltimos7Dias);
+
+  if LblStatusRodape <> nil then
+    LblStatusRodape.Caption := FViewModel.StatusMensagem;
+
+  SincronizarGrid;
 end;
 
 procedure TTarefaListFrame.SincronizarGrid;
 begin
   if StringGridTarefas = nil then Exit;
 
-  // Configuração de cabeçalhos
   StringGridTarefas.ColCount := 5;
   StringGridTarefas.RowCount := FViewModel.Tarefas.Count + 1;
   StringGridTarefas.Cells[0, 0] := 'ID';
@@ -121,6 +117,68 @@ begin
     StringGridTarefas.Cells[2, i + 1] := Item.PrioridadeDesc;
     StringGridTarefas.Cells[3, i + 1] := Item.Status;
     StringGridTarefas.Cells[4, i + 1] := Item.DataCriacao;
+  end;
+end;
+
+procedure TTarefaListFrame.BtnFiltrarClick(Sender: TObject);
+begin
+  if EdtFiltroStatus <> nil then
+    FViewModel.FiltroStatus := EdtFiltroStatus.Text;
+  FViewModel.CarregarDados;
+  AtualizarInterface;
+end;
+
+procedure TTarefaListFrame.BtnLimparFiltrosClick(Sender: TObject);
+begin
+  if EdtFiltroStatus <> nil then
+    EdtFiltroStatus.Text := '';
+  FViewModel.LimparFiltros;
+  AtualizarInterface;
+end;
+
+procedure TTarefaListFrame.BtnAnteriorClick(Sender: TObject);
+begin
+  FViewModel.PaginaAnterior;
+  AtualizarInterface;
+end;
+
+procedure TTarefaListFrame.BtnProximaClick(Sender: TObject);
+begin
+  FViewModel.ProximaPagina;
+  AtualizarInterface;
+end;
+
+procedure TTarefaListFrame.BtnAdicionarClick(Sender: TObject);
+begin
+  // Em código imperativo nativo, notifica a abertura da tela de criação
+end;
+
+procedure TTarefaListFrame.BtnModificarStatusClick(Sender: TObject);
+begin
+  if (StringGridTarefas <> nil) and (StringGridTarefas.Row > 0) then
+  begin
+    var IdStr := StringGridTarefas.Cells[0, StringGridTarefas.Row];
+    var Id := StrToIntDef(IdStr, 0);
+    if Id > 0 then
+    begin
+      // Hook preparado para navegação visual nativa
+    end;
+  end;
+end;
+
+procedure TTarefaListFrame.BtnRemoverClick(Sender: TObject);
+begin
+  if (StringGridTarefas <> nil) and (StringGridTarefas.Row > 0) then
+  begin
+    var IdStr := StringGridTarefas.Cells[0, StringGridTarefas.Row];
+    var Id := StrToIntDef(IdStr, 0);
+    if Id > 0 then
+    begin
+      var Api := TApiClient.Create;
+      Api.RemoverTarefa(Id);
+      FViewModel.CarregarDados;
+      AtualizarInterface;
+    end;
   end;
 end;
 

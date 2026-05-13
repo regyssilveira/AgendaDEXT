@@ -218,6 +218,7 @@ end;
 
 function TTarefaEditViewModel.ObterDtoCriacao: TCriarTarefaDto;
 begin
+  Result := TCriarTarefaDto.Create;
   Result.Titulo := Trim(FTitulo);
   Result.Descricao := Trim(FDescricao);
   Result.Prioridade := FPrioridade;
