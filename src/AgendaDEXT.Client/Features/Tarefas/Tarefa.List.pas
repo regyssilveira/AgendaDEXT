@@ -1,4 +1,4 @@
-﻿unit Tarefa.List;
+unit Tarefa.List;
 
 interface
 
@@ -11,6 +11,8 @@ uses
   Vcl.Grids,
   Vcl.ExtCtrls,
   Dext.UI,
+  Dext.UI.Navigator, // OBRIGATÓRIO: Fornece visibilidade nativa da interface INavigationAware e TNavigationContext
+  Dext.UI.Binding,
   Tarefa.ViewModel;
 
 type

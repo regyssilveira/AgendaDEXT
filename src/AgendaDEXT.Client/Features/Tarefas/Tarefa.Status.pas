@@ -9,6 +9,7 @@ uses
   Vcl.Forms,
   Vcl.StdCtrls,
   Dext.UI,
+  Dext.UI.Navigator, // OBRIGATÓRIO: Permite resolução da interface INavigationAware
   Dext.UI.Binding,
   Tarefa.ViewModel;
 

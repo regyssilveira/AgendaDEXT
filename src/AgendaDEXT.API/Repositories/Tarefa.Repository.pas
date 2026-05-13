@@ -1,4 +1,4 @@
-unit Tarefa.Repository;
+﻿unit Tarefa.Repository;
 
 interface
 
@@ -121,7 +121,9 @@ begin
   // 3. Tarefas concluídas nos últimos 7 dias
   var DataLimite := Now - 7;
   Result.TarefasConcluidasUltimos7Dias := FDb.Tarefas
-    .Where((t.Status = 'CONCLUIDA') and (t.DataExclusao.IsNull) and (t.DataConclusao >= DataLimite))
+    .Where(t.Status = 'CONCLUIDA')
+    .Where(t.DataExclusao.IsNull)
+    .Where(t.DataConclusao >= DataLimite)
     .Count;
 end;
 

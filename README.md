@@ -34,7 +34,7 @@ A API REST foi estruturada adotando o padrão semântico mestre do Dext:
 - **DTOs Puros**: O envio e recebimento de cargas úteis ocorrem via *Records* fortemente tipadas, impedindo manipulações indesejadas de estado nas entidades transacionais.
 
 ### 3. Frontend (Client VCL — `AgendaDEXT.Client`)
-O Client Desktop atua puramente como consumidor dos serviços distribuídos:
+O Client Desktop atua puramente como consumidor dos serviços distribuídos, preservando a mais estrita fidelidade visual e estrutural através dos seus formulários nativos (`TfrmPrincipal`, `TfrmTarefa`, `TfrmStatus`):
 - **Magic Binding Declarativo**: Sincronização automatizada da interface visual (Grids, caixas de texto e botões) com as ViewModels por meio de marcações RTTI (`[BindEdit]`, `[OnClickMsg]`).
 - **Navegação de Alta Performance**: Orquestrada por instâncias desacopladas do **Dext Navigator** (`Navigator.Push`), injetando *frames* visuais limpas com injeção tipada de estado sem causar congelamentos de thread.
 - **Parametrização de Rede**: O cliente `TRestClient` inicializa dinamicamente consumindo as chaves e o BaseURL do `client.ini` na porta unificada **9005**.
@@ -63,6 +63,23 @@ O Client Desktop atua puramente como consumidor dos serviços distribuídos:
         ├── /Services              # Wrapper otimizado da record TRestClient
         └── AgendaDEXT.Client.dpr  # Binário inicializador GUI não-bloqueante
 ```
+
+---
+
+## ⚡ Referência Rápida das APIs e Status HTTP
+
+Consulte a matriz abaixo para uma visão geral instantânea das rotas transacionadas pelo backend, bem como os códigos de **Status HTTP esperados** para cenários de sucesso e validações. Todas as requisições transacionais exigem o cabeçalho `X-API-KEY`.
+
+| Verbo | Rota | Descrição | Autenticação | Carga Útil / Query Params | Status HTTP Esperados |
+| :---: | :--- | :--- | :---: | :--- | :--- |
+| **GET** | `/api/health` | Monitoramento de saúde e versão em tempo real | Pública | *Nenhuma* | `200 OK` |
+| **POST** | `/api/tarefas` | Cadastra uma nova tarefa na base | `X-API-KEY` | JSON: `{ titulo, descricao, prioridade }` | `201 Created` / `401 Unauthorized` / `400 Bad Request` |
+| **GET** | `/api/tarefas` | Listagem de tarefas paginada e filtrada | `X-API-KEY` | Query: `status`, `prioridade`, `ordem`, `page`, `limit` | `200 OK` / `401 Unauthorized` |
+| **GET** | `/api/tarefas/{id}` | Obtém os detalhes de uma tarefa específica | `X-API-KEY` | Rota: `id` | `200 OK` / `401 Unauthorized` / `404 Not Found` |
+| **PUT** | `/api/tarefas/{id}` | Atualização completa dos dados da tarefa | `X-API-KEY` | JSON: `{ titulo, descricao, prioridade }` | `200 OK` / `401 Unauthorized` / `404 Not Found` |
+| **PUT** | `/api/tarefas/{id}/status` | Transição segura de ciclo de vida (Status) | `X-API-KEY` | JSON: `{ status }` | `200 OK` / `401 Unauthorized` / `404 Not Found` / `422 Unprocessable Entity` |
+| **DELETE** | `/api/tarefas/{id}` | Exclusão lógica transacionada (*Soft Delete*) | `X-API-KEY` | Rota: `id` | `200 OK` / `401 Unauthorized` / `404 Not Found` |
+| **GET** | `/api/estatisticas` | Indicadores e métricas de negócio consolidadas | `X-API-KEY` | *Nenhuma* | `200 OK` / `401 Unauthorized` |
 
 ---
 

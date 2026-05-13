@@ -7,7 +7,7 @@ uses
   Dext.Collections;
 
 type
-  TTarefaDto = record
+  TTarefaDto = class
     Id: Integer;
     Titulo: string;
     Descricao: string;
@@ -17,31 +17,31 @@ type
     DataConclusao: string;
   end;
 
-  TPaginacaoDto = record
+  TPaginacaoDto = class
     PaginaAtual: Integer;
     ItensPorPagina: Integer;
     TotalItens: Integer;
     TotalPaginas: Integer;
   end;
 
-  TTarefasPaginadasDto = record
+  TTarefasPaginadasDto = class
     Dados: IList<TTarefaDto>;
     Paginacao: TPaginacaoDto;
   end;
 
-  TEstatisticasDto = record
+  TEstatisticasDto = class
     TotalTarefas: Integer;
     MediaPrioridadePendentes: Double;
     TarefasConcluidasUltimos7Dias: Integer;
   end;
 
-  TCriarTarefaDto = record
+  TCriarTarefaDto = class
     Titulo: string;
     Descricao: string;
     Prioridade: Integer;
   end;
 
-  TAtualizarStatusDto = record
+  TAtualizarStatusDto = class
     Status: string;
   end;
 

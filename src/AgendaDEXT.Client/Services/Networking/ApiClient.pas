@@ -60,7 +60,7 @@ begin
     var BaseUrl := Format('%s://%s:%d', [Protocolo, Host, Porta]);
     
     // Instancia a TRestClient record nativamente com pool embutido
-    FClient := TRestClient.Create(BaseUrl);
+    FClient := RestClient(BaseUrl);
     
     // Anexa o provedor de autenticação de API Key
     FClient.ApiKey('X-API-KEY', ApiKey);
@@ -71,25 +71,24 @@ end;
 
 function TApiClient.ListarTarefas(Status: string; Prioridade: Integer; Pagina: Integer): TTarefasPaginadasDto;
 begin
-  var Req := FClient.Get('/api/tarefas');
-  
-  if Trim(Status) <> '' then
-    Req := Req.QueryParam('status', Status);
-    
-  if Prioridade > 0 then
-    Req := Req.QueryParam('prioridade', IntToStr(Prioridade));
-    
-  if Pagina > 1 then
-    Req := Req.QueryParam('page', IntToStr(Pagina));
+  var Req := TRestRequest.Create(FClient, hmGET, '/api/tarefas');
 
-  // Executa de forma síncrona não-congelante ou bloqueante segura e desserializa magicamente
+  if Trim(Status) <> '' then
+    Req.QueryParam('status', Status);
+
+  if Prioridade > 0 then
+    Req.QueryParam('prioridade', IntToStr(Prioridade));
+
+  if Pagina > 1 then
+    Req.QueryParam('page', IntToStr(Pagina));
+
   Result := Req.Execute<TTarefasPaginadasDto>.Await;
 end;
 
 function TApiClient.CriarTarefa(const Dto: TCriarTarefaDto): TTarefaDto;
 begin
-  Result := FClient.Post('/api/tarefas')
-    .Body(Dto)
+  var Req := TRestRequest.Create(FClient, hmPOST, '/api/tarefas');
+  Req.Body<TCriarTarefaDto>(Dto)
     .Execute<TTarefaDto>
     .Await;
 end;
@@ -99,7 +98,8 @@ begin
   var Payload: TAtualizarStatusDto;
   Payload.Status := NovoStatus;
 
-  Result := FClient.Put(Format('/api/tarefas/%d/status', [Id]))
+  var Req := TRestRequest.Create(FClient, hmPUT, Format('/api/tarefas/%d/status', [Id]));
+  Result := Req
     .Body(Payload)
     .Execute<TTarefaDto>
     .Await;
@@ -108,7 +108,7 @@ end;
 procedure TApiClient.RemoverTarefa(Id: Integer);
 begin
   var Res := FClient.Delete(Format('/api/tarefas/%d', [Id])).Await;
-  if not Res.IsSuccess then
+  if not Res.StatusCode = 200 then
     raise Exception.Create('Falha ao remover tarefa: ' + Res.ContentString);
 end;
 
