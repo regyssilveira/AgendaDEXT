@@ -1,0 +1,14 @@
+*.exe
+*.dcu
+*.dsv
+*.dsk
+*.~*
+__history/
+*.ini
+*.local
+*.identcache
+Win32/
+Win64/
+modules/
+bin/
+logs/

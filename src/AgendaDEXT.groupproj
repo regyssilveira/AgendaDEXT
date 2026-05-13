@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{BBE0CC82-1112-487D-A887-08B556755F5E}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="AgendaDEXT.API\AgendaDEXT.API.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="AgendaDEXT.Client\AgendaDEXT.Client.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AgendaDEXT_API">
+        <MSBuild Projects="AgendaDEXT.API\AgendaDEXT.API.dproj"/>
+    </Target>
+    <Target Name="AgendaDEXT_API:Clean">
+        <MSBuild Projects="AgendaDEXT.API\AgendaDEXT.API.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AgendaDEXT_API:Make">
+        <MSBuild Projects="AgendaDEXT.API\AgendaDEXT.API.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AgendaDEXT_Client">
+        <MSBuild Projects="AgendaDEXT.Client\AgendaDEXT.Client.dproj"/>
+    </Target>
+    <Target Name="AgendaDEXT_Client:Clean">
+        <MSBuild Projects="AgendaDEXT.Client\AgendaDEXT.Client.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AgendaDEXT_Client:Make">
+        <MSBuild Projects="AgendaDEXT.Client\AgendaDEXT.Client.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AgendaDEXT_API;AgendaDEXT_Client"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AgendaDEXT_API:Clean;AgendaDEXT_Client:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AgendaDEXT_API:Make;AgendaDEXT_Client:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

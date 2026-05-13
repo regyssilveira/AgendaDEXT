@@ -1,0 +1,13 @@
+[Database]
+Server=localhost
+Port=1433
+Database=AgendaBDMG
+Username=sa
+Password=SuaSenha@123
+Driver=MSSQL
+
+[Server]
+Port=9005
+
+[Security]
+ApiKey=agenda-BDMG-dev-key-2026
