@@ -7,11 +7,12 @@ uses
   System.IniFiles,
   Dext.Net.RestClient,
   Dext.Net.RestRequest,
-  Dext.Threading.Async, // OBRIGATÓRIO: garante o reconhecimento nativo da extensão .Await
+  Dext.Threading.Async,
   Dext.Collections,
   Tarefa.Client.DTOs;
 
 type
+  {$M+} // OBRIGATÓRIO: Permite mockagem limpa do cliente nos testes unitários da UI
   IApiClient = interface
     ['{F2C8D105-B943-417A-A12B-3C9E87A5B912}']
     function ListarTarefas(Status: string; Prioridade: Integer; Pagina: Integer): TTarefasPaginadasDto;
@@ -20,6 +21,7 @@ type
     procedure RemoverTarefa(Id: Integer);
     function ObterEstatisticas: TEstatisticasDto;
   end;
+  {$M-}
 
   TApiClient = class(TInterfacedObject, IApiClient)
   private

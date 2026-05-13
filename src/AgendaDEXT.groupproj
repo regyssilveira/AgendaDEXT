@@ -3,6 +3,9 @@
         <ProjectGuid>{BBE0CC82-1112-487D-A887-08B556755F5E}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="AgendaDEXT.Tests\AgendaDEXT.Tests.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="AgendaDEXT.API\AgendaDEXT.API.dproj">
             <Dependencies/>
         </Projects>
@@ -17,6 +20,15 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="AgendaDEXT_Tests">
+        <MSBuild Projects="AgendaDEXT.Tests\AgendaDEXT.Tests.dproj"/>
+    </Target>
+    <Target Name="AgendaDEXT_Tests:Clean">
+        <MSBuild Projects="AgendaDEXT.Tests\AgendaDEXT.Tests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AgendaDEXT_Tests:Make">
+        <MSBuild Projects="AgendaDEXT.Tests\AgendaDEXT.Tests.dproj" Targets="Make"/>
+    </Target>
     <Target Name="AgendaDEXT_API">
         <MSBuild Projects="AgendaDEXT.API\AgendaDEXT.API.dproj"/>
     </Target>
@@ -36,13 +48,13 @@
         <MSBuild Projects="AgendaDEXT.Client\AgendaDEXT.Client.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="AgendaDEXT_API;AgendaDEXT_Client"/>
+        <CallTarget Targets="AgendaDEXT_Tests;AgendaDEXT_API;AgendaDEXT_Client"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="AgendaDEXT_API:Clean;AgendaDEXT_Client:Clean"/>
+        <CallTarget Targets="AgendaDEXT_Tests:Clean;AgendaDEXT_API:Clean;AgendaDEXT_Client:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="AgendaDEXT_API:Make;AgendaDEXT_Client:Make"/>
+        <CallTarget Targets="AgendaDEXT_Tests:Make;AgendaDEXT_API:Make;AgendaDEXT_Client:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

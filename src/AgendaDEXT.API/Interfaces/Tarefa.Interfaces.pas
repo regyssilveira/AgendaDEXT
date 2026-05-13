@@ -10,6 +10,7 @@ uses
   Tarefa.DTOs;
 
 type
+  {$M+} // OBRIGATÓRIO: Habilita geração de RTTI completa para criação dinâmica de Mocks via Dext.Mocks
   ITarefaRepository = interface
     ['{3E60B20D-C178-4A1C-8D47-73B2ED74D1B5}']
     function Listar(StatusFiltro: string; PrioridadeFiltro: Integer; OrdemFiltro: string; Pagina, Limite: Integer; out TotalRegistros: Integer): IList<TTarefa>;
@@ -30,6 +31,7 @@ type
     procedure Remover(Id: Integer);
     function ObterEstatisticas: TEstatisticasResponseDto;
   end;
+  {$M-}
 
 implementation
 
