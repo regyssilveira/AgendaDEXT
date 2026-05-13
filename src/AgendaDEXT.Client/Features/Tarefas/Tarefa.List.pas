@@ -1,4 +1,4 @@
-﻿unit Tarefa.List;
+unit Tarefa.List;
 
 interface
 

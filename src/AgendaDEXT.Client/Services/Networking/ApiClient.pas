@@ -1,4 +1,4 @@
-﻿unit ApiClient;
+unit ApiClient;
 
 interface
 
@@ -116,7 +116,7 @@ end;
 
 function TApiClient.AtualizarStatus(Id: Integer; const NovoStatus: string): TTarefaDto;
 begin
-  var Payload: TAtualizarStatusDto.Create;
+  var Payload := TAtualizarStatusDto.Create;
   try
     Payload.Status := NovoStatus;
 
@@ -134,7 +134,7 @@ end;
 procedure TApiClient.RemoverTarefa(Id: Integer);
 begin
   var Res := FClient.Delete(Format('/api/tarefas/%d', [Id])).Await;
-  if not Res.StatusCode = 200 then
+  if Res.StatusCode <> 200 then
     raise Exception.Create('Falha ao remover tarefa: ' + Res.ContentString);
 end;
 
