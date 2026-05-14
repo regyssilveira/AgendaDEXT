@@ -163,7 +163,7 @@ begin
 
   Tarefa.Status := NovoStatus;
   if NovoStatus = 'CONCLUIDA' then
-    Tarefa.DataConclusao := Now;
+    Tarefa.DataConclusao.Value := Now;
 
   var Atualizada := FRepo.Atualizar(Tarefa);
   Result := MapearParaDto(Atualizada);

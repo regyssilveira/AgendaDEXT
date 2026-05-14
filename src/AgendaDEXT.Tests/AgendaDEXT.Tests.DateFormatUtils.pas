@@ -1,10 +1,11 @@
-unit AgendaDEXT.Tests.DateFormatUtils;
+﻿unit AgendaDEXT.Tests.DateFormatUtils;
 
 interface
 
 uses
   System.SysUtils,
   Dext.Testing,
+  Dext.Core.SmartTypes,
   Dext.Types.Nullable,
   DateFormat.Utils;
 
@@ -40,12 +41,13 @@ end;
 
 procedure TDateFormatUtilsTests.Deve_TratarCorretamente_DatasNulas_Nullable;
 begin
-  var DataNula: Nullable<TDateTime>;
+  var DataNula: Nullable<DateTimeType>;
   // Valor default de Nullable record é IsNull = True
   var Res1 := TDateFormatUtils.NullableDateTimeToIsoString(DataNula);
   Should(Res1).Be('');
 
-  var DataPreenchida: Nullable<TDateTime> := EncodeDate(2026, 1, 1);
+  var DataPreenchida: Nullable<DateTimeType>;
+  DataPreenchida.Value := EncodeDate(2026, 1, 1);
   var Res2 := TDateFormatUtils.NullableDateTimeToIsoString(DataPreenchida);
   Should(Res2).StartWith('2026-01-01');
 end;

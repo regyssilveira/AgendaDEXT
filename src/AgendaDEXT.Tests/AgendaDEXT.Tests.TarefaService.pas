@@ -1,4 +1,4 @@
-unit AgendaDEXT.Tests.TarefaService;
+﻿unit AgendaDEXT.Tests.TarefaService;
 
 interface
 
@@ -68,6 +68,7 @@ begin
   end;
   
   Should(Lancou).BeTrue;
+
   // Atesta que o repositório nunca foi acionado para salvar lixo
   FMockRepo.Received(Times.Never).Criar(Arg.Any<TTarefa>);
 end;

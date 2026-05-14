@@ -106,11 +106,11 @@ begin
   Result.TotalTarefas := FDb.Tarefas.QueryAll.Count;
 
   // 2. Média de prioridade de tarefas pendentes
-  var ListaPendentes := FDb.Tarefas.Where((t.Status = 'PENDENTE') and (t.DataExclusao.IsNull)).ToList;
+  var ListaPendentes := FDb.Tarefas.Where(t.Status = 'PENDENTE').ToList;
   var SomaPrioridade: Double := 0;
   for var Item in ListaPendentes do
     SomaPrioridade := SomaPrioridade + Item.Prioridade.Value;
-  
+
   if ListaPendentes.Count > 0 then
     Result.MediaPrioridadePendentes := SomaPrioridade / ListaPendentes.Count
   else
@@ -120,7 +120,6 @@ begin
   var DataLimite: TDateTime := Now - 7;
   Result.TarefasConcluidasUltimos7Dias := FDb.Tarefas
     .Where(t.Status = 'CONCLUIDA')
-    .Where(t.DataExclusao.IsNull)
     .Where(t.DataConclusao.Value >= DataLimite)
     .Count;
 end;
