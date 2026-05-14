@@ -20,8 +20,7 @@ uses
   Tarefa.Entity in 'Models\Tarefa.Entity.pas',
   Tarefa.Repository in 'Repositories\Tarefa.Repository.pas',
   Tarefa.Service in 'Services\Tarefa.Service.pas',
-  DateFormat.Utils in 'Utils\DateFormat.Utils.pas',
-  FileLogProvider in 'Middlewares\FileLogProvider.pas';
+  DateFormat.Utils in 'Utils\DateFormat.Utils.pas';
 
 var
   App: IWebApplication;

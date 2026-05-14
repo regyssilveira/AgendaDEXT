@@ -184,7 +184,6 @@
         <DCCReference Include="Repositories\Tarefa.Repository.pas"/>
         <DCCReference Include="Services\Tarefa.Service.pas"/>
         <DCCReference Include="Utils\DateFormat.Utils.pas"/>
-        <DCCReference Include="Middlewares\FileLogProvider.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

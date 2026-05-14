@@ -26,7 +26,6 @@ type
 implementation
 
 uses
-  FileLogProvider,
   AgendaDEXT.Context,
   Tarefa.Interfaces,
   Tarefa.Repository,
@@ -106,9 +105,8 @@ begin
       procedure(Builder: ILoggingBuilder)
       begin
         Builder
-          .SetMinimumLevel(TLogLevel.Information)
-          //.AddConsole
-          .AddProvider(TFileLoggerProvider.Create)
+          .SetMinimumLevel(TLogLevel.Trace)
+          .AddFile('logs/app.log', 10, True)
           .AddTelemetry;
       end
     );
