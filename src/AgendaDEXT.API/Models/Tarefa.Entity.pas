@@ -10,17 +10,6 @@ uses
   Dext.Types.Nullable;
 
 type
-  TTarefaProps = record
-    Id: IntType;
-    Titulo: StringType;
-    Descricao: StringType;
-    Prioridade: IntType;
-    Status: StringType;
-    DataCriacao: Prop<TDateTime>;
-    DataConclusao: Prop<Nullable<TDateTime>>;
-    DataExclusao: Prop<Nullable<TDateTime>>;
-  end;
-
   [Table('Tarefas')]
   TTarefa = class
   private
@@ -29,12 +18,10 @@ type
     FDescricao: StringType;
     FPrioridade: IntType;
     FStatus: StringType;
-    FDataCriacao: TDateTime;
-    FDataConclusao: Nullable<TDateTime>;
-    FDataExclusao: Nullable<TDateTime>;
+    FDataCriacao: Prop<TDateTime>;
+    FDataConclusao: Prop<Nullable<TDateTime>>;
+    FDataExclusao: Prop<Nullable<TDateTime>>;
   public
-    class var Props: TTarefaProps;
-
     [PK, AutoInc]
     property Id: IntType read FId write FId;
 
@@ -51,12 +38,12 @@ type
     property Status: StringType read FStatus write FStatus;
 
     [CreatedAt]
-    property DataCriacao: TDateTime read FDataCriacao write FDataCriacao;
+    property DataCriacao: Prop<TDateTime> read FDataCriacao write FDataCriacao;
 
-    property DataConclusao: Nullable<TDateTime> read FDataConclusao write FDataConclusao;
+    property DataConclusao: Prop<Nullable<TDateTime>> read FDataConclusao write FDataConclusao;
 
     [SoftDelete]
-    property DataExclusao: Nullable<TDateTime> read FDataExclusao write FDataExclusao;
+    property DataExclusao: Prop<Nullable<TDateTime>> read FDataExclusao write FDataExclusao;
   end;
 
 implementation

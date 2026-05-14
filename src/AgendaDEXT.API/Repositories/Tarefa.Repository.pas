@@ -41,7 +41,7 @@ end;
 
 function TTarefaRepository.Listar(StatusFiltro: string; PrioridadeFiltro: Integer; OrdemFiltro: string; Pagina, Limite: Integer; out TotalRegistros: Integer): IList<TTarefa>;
 begin
-  var t := TTarefa.Props;
+  var t := Prototype.Entity<TTarefa>;
   var Query := FDb.Tarefas.Where(t.DataExclusao.IsNull);
 
   if Trim(StatusFiltro) <> '' then
@@ -54,27 +54,28 @@ begin
 
   var Ordem := LowerCase(Trim(OrdemFiltro));
   if Ordem = 'datacriacao_asc' then
-    Query := Query.OrderBy(t.DataCriacao.Asc)
+    Query.OrderBy(t.DataCriacao.Asc)
   else if Ordem = 'prioridade_asc' then
-    Query := Query.OrderBy(t.Prioridade.Asc)
+    Query.OrderBy(t.Prioridade.Asc)
   else if Ordem = 'prioridade_desc' then
-    Query := Query.OrderBy(t.Prioridade.Desc)
+    Query.OrderBy(t.Prioridade.Desc)
   else if Ordem = 'titulo_asc' then
-    Query := Query.OrderBy(t.Titulo.Asc)
+    Query.OrderBy(t.Titulo.Asc)
   else if Ordem = 'titulo_desc' then
-    Query := Query.OrderBy(t.Titulo.Desc)
+    Query.OrderBy(t.Titulo.Desc)
   else
-    Query := Query.OrderBy(t.DataCriacao.Desc); // Padrão: mais recentes primeiro
+    Query.OrderBy(t.DataCriacao.Desc);
 
   var SkipCount := (Pagina - 1) * Limite;
-  if SkipCount < 0 then SkipCount := 0;
+  if SkipCount < 0 then
+    SkipCount := 1;
 
   Result := Query.Skip(SkipCount).Take(Limite).ToList;
 end;
 
 function TTarefaRepository.ObterPorId(Id: Integer): TTarefa;
 begin
-  var t := TTarefa.Props;
+  var t := Prototype.Entity<TTarefa>;
   Result := FDb.Tarefas.Where((t.Id = Id) and (t.DataExclusao.IsNull)).FirstOrDefault;
 end;
 
@@ -102,7 +103,7 @@ end;
 
 function TTarefaRepository.ObterEstatisticas: TEstatisticasResponseDto;
 begin
-  var t := TTarefa.Props;
+  var t := Prototype.Entity<TTarefa>;
   
   // 1. Total de tarefas ativas
   Result.TotalTarefas := FDb.Tarefas.Where(t.DataExclusao.IsNull).Count;
@@ -111,7 +112,7 @@ begin
   var ListaPendentes := FDb.Tarefas.Where((t.Status = 'PENDENTE') and (t.DataExclusao.IsNull)).ToList;
   var SomaPrioridade: Double := 0;
   for var Item in ListaPendentes do
-    SomaPrioridade := SomaPrioridade + Item.Prioridade;
+    SomaPrioridade := SomaPrioridade + Item.Prioridade.Value;
   
   if ListaPendentes.Count > 0 then
     Result.MediaPrioridadePendentes := SomaPrioridade / ListaPendentes.Count
