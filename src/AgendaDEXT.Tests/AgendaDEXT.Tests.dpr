@@ -28,7 +28,7 @@ begin
   // Configuração e execução mestre do Dext Testing Framework com saída verbosa obrigatória
   TTest.SetExitCode(
     TTest.Configure
-      .Verbose
+      .UseDashboard(9000, True)
       .RegisterFixtures([
         TTarefaServiceTests,
         TDateFormatUtilsTests,

@@ -1,4 +1,4 @@
-program AgendaDEXT.API;
+﻿program AgendaDEXT.API;
 
 {$APPTYPE CONSOLE}
 
@@ -8,6 +8,7 @@ uses
   Dext,
   Dext.Entity,
   Dext.Web,
+  Dext.Configuration.Yaml,
   AgendaDEXT.API.Startup in 'AgendaDEXT.API.Startup.pas',
   Estatisticas.Controller in 'Controllers\Estatisticas.Controller.pas',
   Health.Controller in 'Controllers\Health.Controller.pas',
@@ -25,16 +26,18 @@ var
   App: IWebApplication;
   Provider: IServiceProvider;
   LPort: Integer;
+  Config: IConfiguration;
+
 begin
   SetConsoleCharSet; // OBRIGATÓRIO: garante saída correta de caracteres UTF-8 no terminal console
   try
-    // Inicializa a porta padronizada do serviço
-    LPort := 9005;
-
     // Inicializa o orquestrador da aplicação e injeta a classe Startup
     App := WebApplication;
     App.UseStartup(TStartup.Create);
     Provider := App.BuildServices;
+
+    // Inicializa a porta padronizada do serviço
+    LPort := StrToIntDef(App.Configuration.Item['server:port'], 1);
 
     Writeln('');
     Writeln('=============================================================');
