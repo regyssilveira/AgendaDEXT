@@ -49,6 +49,7 @@ O Client Desktop atua puramente como consumidor dos serviços distribuídos, pre
 ├── appsettings.yaml.example       # Template de configuração do Backend (YAML)
 ├── client.yaml.example            # Template de configuração do Cliente VCL (YAML)
 ├── README.md                      # Documentação central do projeto
+├── /docs                          # Coleção do Postman e documentação técnica
 └── /src
     ├── /AgendaDEXT.API            # Projeto Backend (API RESTful em Dext Puro)
     │   ├── /Controllers           # Controladores consolidados e roteamento via atributos
@@ -112,6 +113,8 @@ Abra e compile o projeto cliente (`src\AgendaDEXT.Client\AgendaDEXT.Client.dpr`)
 ---
 
 ## 📡 Exemplos de Chamadas REST (cURL)
+
+> **Dica de Homologação**: Uma coleção oficial completa e padronizada para o **Postman** com todos os payloads e variáveis pré-configuradas está disponível em `docs/AgendaDEXT.postman_collection.json`.
 
 > **Nota de Autenticação**: O cabeçalho `X-API-KEY` é de envio obrigatório para todas as rotas transacionadas, exceto a consulta de saúde.
 

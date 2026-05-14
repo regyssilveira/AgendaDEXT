@@ -1,0 +1,287 @@
+{
+  "info": {
+    "_postman_id": "740ab2af-860b-48ff-b42d-0e6d6c915688",
+    "name": "Agenda DEXT API",
+    "description": "Coleção oficial e padronizada para testes de integração e consumo dos endpoints da API REST do **Agenda DEXT**.\n\nDesenvolvida seguindo princípios de alta coesão, utilizando variáveis globais de ambiente da coleção para simplificar a manutenção e alternância entre ambientes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:9005",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "agenda-dev-key-2026",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Monitoramento",
+      "item": [
+        {
+          "name": "Health Check (Saúde da API)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            },
+            "description": "Endpoint de monitoramento público. Retorna o status operacional do servidor, tempo de atividade e versão atual do serviço sem requerer autenticação."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Tarefas",
+      "item": [
+        {
+          "name": "Criar Nova Tarefa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"titulo\": \"Validar injeção de dependência e ORM\",\r\n  \"descricao\": \"Implementar rotinas de teste unitário garantindo o mapeamento correto via Dext ORM.\",\r\n  \"prioridade\": 5\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tarefas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tarefas"
+              ]
+            },
+            "description": "Cadastra uma nova tarefa no banco de dados. Exige o envio da chave de API no cabeçalho `X-API-KEY`."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Tarefas (Paginado/Filtrado)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tarefas?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tarefas"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Número da página atual"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Quantidade máxima de registros retornados"
+                },
+                {
+                  "key": "status",
+                  "value": "PENDENTE",
+                  "disabled": true,
+                  "description": "Filtro opcional por status (ex: PENDENTE, CONCLUIDA)"
+                },
+                {
+                  "key": "prioridade",
+                  "value": "5",
+                  "disabled": true,
+                  "description": "Filtro opcional por grau de prioridade (1 a 5)"
+                }
+              ]
+            },
+            "description": "Retorna uma lista paginada de tarefas, permitindo aplicação opcional de filtros por status e prioridade."
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Detalhes da Tarefa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tarefas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tarefas",
+                "1"
+              ]
+            },
+            "description": "Recupera todos os dados de uma tarefa específica identificada pelo seu ID na rota."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Tarefa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"titulo\": \"Validar injeção de dependência e ORM (Revisado)\",\r\n  \"descricao\": \"Implementar rotinas de teste unitário e homologar tempo de latência na nuvem.\",\r\n  \"prioridade\": 4\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tarefas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tarefas",
+                "1"
+              ]
+            },
+            "description": "Substitui integralmente as informações da tarefa com base no ID fornecido."
+          },
+          "response": []
+        },
+        {
+          "name": "Modificar Status da Tarefa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"CONCLUIDA\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tarefas/1/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tarefas",
+                "1",
+                "status"
+              ]
+            },
+            "description": "Executa a transição de ciclo de vida (status) da tarefa de forma segura através da máquina de estados do domínio."
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir Tarefa (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tarefas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tarefas",
+                "1"
+              ]
+            },
+            "description": "Realiza a exclusão lógica do registro no banco de dados, preservando a integridade histórica."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Estatísticas",
+      "item": [
+        {
+          "name": "Consultar Indicadores de Negócio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/estatisticas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "estatisticas"
+              ]
+            },
+            "description": "Consolida os KPIs do sistema em tempo real, fornecendo totais gerais, por prioridade e por status."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
