@@ -1,4 +1,4 @@
-unit Tarefa.Service;
+﻿unit Tarefa.Service;
 
 interface
 
@@ -65,7 +65,6 @@ begin
   var TotalRegistros: Integer := 0;
   var Entidades := FRepo.Listar(StatusFiltro, PrioridadeFiltro, OrdemFiltro, Pag, Lim, TotalRegistros);
 
-  // Como os DTOs são Records, a lista não precisa assumir propriedade de heap via OwnsObjects
   var ListaDto := TCollections.CreateList<TTarefaResponseDto>;
   for var Item in Entidades do
     ListaDto.Add(MapearParaDto(Item));

@@ -31,6 +31,8 @@ type
 implementation
 
 uses
+  System.StrUtils,
+  Dext.Types.Nullable,
   Dext.Core.SmartTypes;
 
 constructor TTarefaRepository.Create(Db: TAgendaDbContext);
@@ -42,29 +44,25 @@ end;
 function TTarefaRepository.Listar(StatusFiltro: string; PrioridadeFiltro: Integer; OrdemFiltro: string; Pagina, Limite: Integer; out TotalRegistros: Integer): IList<TTarefa>;
 begin
   var t := Prototype.Entity<TTarefa>;
-  var Query := FDb.Tarefas.Where(t.DataExclusao.IsNull);
+  var Query := FDb.Tarefas.QueryAll;
 
   if Trim(StatusFiltro) <> '' then
-    Query := Query.Where(t.Status = UpperCase(Trim(StatusFiltro)));
+    Query.Where(t.Status = UpperCase(Trim(StatusFiltro)));
 
   if PrioridadeFiltro > 0 then
-    Query := Query.Where(t.Prioridade = PrioridadeFiltro);
+    Query.Where(t.Prioridade = PrioridadeFiltro);
 
   TotalRegistros := Query.Count;
 
-  var Ordem := LowerCase(Trim(OrdemFiltro));
-  if Ordem = 'datacriacao_asc' then
-    Query.OrderBy(t.DataCriacao.Asc)
-  else if Ordem = 'prioridade_asc' then
-    Query.OrderBy(t.Prioridade.Asc)
-  else if Ordem = 'prioridade_desc' then
-    Query.OrderBy(t.Prioridade.Desc)
-  else if Ordem = 'titulo_asc' then
-    Query.OrderBy(t.Titulo.Asc)
-  else if Ordem = 'titulo_desc' then
-    Query.OrderBy(t.Titulo.Desc)
+  case IndexText(Trim(OrdemFiltro), ['datacriacao_asc', 'prioridade_asc', 'prioridade_desc', 'titulo_asc', 'titulo_desc']) of
+    0: Query.OrderBy(t.DataCriacao.Asc);
+    1: Query.OrderBy(t.Prioridade.Asc);
+    2: Query.OrderBy(t.Prioridade.Desc);
+    3: Query.OrderBy(t.Titulo.Asc);
+    4: Query.OrderBy(t.Titulo.Desc);
   else
     Query.OrderBy(t.DataCriacao.Desc);
+  end;
 
   var SkipCount := (Pagina - 1) * Limite;
   if SkipCount < 0 then
@@ -76,13 +74,14 @@ end;
 function TTarefaRepository.ObterPorId(Id: Integer): TTarefa;
 begin
   var t := Prototype.Entity<TTarefa>;
-  Result := FDb.Tarefas.Where((t.Id = Id) and (t.DataExclusao.IsNull)).FirstOrDefault;
+  Result := FDb.Tarefas.Where(t.Id = Id).FirstOrDefault;
 end;
 
 function TTarefaRepository.Criar(Tarefa: TTarefa): TTarefa;
 begin
   FDb.Tarefas.Add(Tarefa);
   FDb.SaveChanges;
+
   Result := Tarefa;
 end;
 
@@ -95,9 +94,7 @@ end;
 
 procedure TTarefaRepository.Remover(Tarefa: TTarefa);
 begin
-  // Soft delete implementado alterando o campo DataExclusao
-  Tarefa.DataExclusao := Now;
-  FDb.Tarefas.Update(Tarefa);
+  FDb.Tarefas.Remove(Tarefa);
   FDb.SaveChanges;
 end;
 
@@ -106,7 +103,7 @@ begin
   var t := Prototype.Entity<TTarefa>;
   
   // 1. Total de tarefas ativas
-  Result.TotalTarefas := FDb.Tarefas.Where(t.DataExclusao.IsNull).Count;
+  Result.TotalTarefas := FDb.Tarefas.QueryAll.Count;
 
   // 2. Média de prioridade de tarefas pendentes
   var ListaPendentes := FDb.Tarefas.Where((t.Status = 'PENDENTE') and (t.DataExclusao.IsNull)).ToList;
@@ -124,7 +121,7 @@ begin
   Result.TarefasConcluidasUltimos7Dias := FDb.Tarefas
     .Where(t.Status = 'CONCLUIDA')
     .Where(t.DataExclusao.IsNull)
-    .Where(t.DataConclusao >= DataLimite)
+    .Where(t.DataConclusao.Value >= DataLimite)
     .Count;
 end;
 

@@ -27,7 +27,6 @@ var
   App: IWebApplication;
   Provider: IServiceProvider;
   LPort: Integer;
-  Config: IConfiguration;
 
 begin
   SetConsoleCharSet; // OBRIGATÓRIO: garante saída correta de caracteres UTF-8 no terminal console

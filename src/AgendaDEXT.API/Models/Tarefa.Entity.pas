@@ -18,9 +18,9 @@ type
     FDescricao: StringType;
     FPrioridade: IntType;
     FStatus: StringType;
-    FDataCriacao: Prop<TDateTime>;
-    FDataConclusao: Prop<Nullable<TDateTime>>;
-    FDataExclusao: Prop<Nullable<TDateTime>>;
+    FDataCriacao: DateTimeType;
+    FDataConclusao: Nullable<DateTimeType>;
+    FDataExclusao: Nullable<DateTimeType>;
   public
     [PK, AutoInc]
     property Id: IntType read FId write FId;
@@ -38,12 +38,12 @@ type
     property Status: StringType read FStatus write FStatus;
 
     [CreatedAt]
-    property DataCriacao: Prop<TDateTime> read FDataCriacao write FDataCriacao;
+    property DataCriacao: DateTimeType read FDataCriacao write FDataCriacao;
 
-    property DataConclusao: Prop<Nullable<TDateTime>> read FDataConclusao write FDataConclusao;
+    property DataConclusao: Nullable<DateTimeType> read FDataConclusao write FDataConclusao;
 
-    [SoftDelete]
-    property DataExclusao: Prop<Nullable<TDateTime>> read FDataExclusao write FDataExclusao;
+    [DeletedAt]
+    property DataExclusao: Nullable<DateTimeType> read FDataExclusao write FDataExclusao;
   end;
 
 implementation
